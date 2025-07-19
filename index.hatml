@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Curricular Medicina - Univ. Austral</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+    .year {
+      background-color: #e3ecf3;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .year h2 {
+      text-align: center;
+      color: #1c3b57;
+    }
+    .subject {
+      background-color: #ffffff;
+      border: 2px solid #b0cbe8;
+      border-radius: 8px;
+      padding: 5px;
+      margin: 5px 0;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.3s;
+    }
+    .subject.approved {
+      background-color: #a5d6a7;
+    }
+    .subject.locked {
+      background-color: #e0e0e0;
+      cursor: not-allowed;
+    }
+    .subject:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      white-space: pre-line;
+      font-size: 12px;
+      z-index: 999;
+    }
+    .progress {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular Medicina - Universidad Austral</h1>
+  <div class="grid" id="malla"></div>
+  <div class="progress" id="progreso"></div>
+  <div class="progress" id="porcentaje"></div>
+
+  <script>
+    const materias = [
+      {id:1,nombre:'Anatomía 1',año:1,reqs:[]},
+      {id:2,nombre:'Citología e Histología General',año:1,reqs:[]},
+      {id:3,nombre:'Bioquímica 1',año:1,reqs:[]},
+      {id:4,nombre:'Anatomía 2',año:1,reqs:[]},
+      {id:5,nombre:'Histología Especial',año:1,reqs:[2]},
+      {id:6,nombre:'Bioquímica 2',año:1,reqs:[3]},
+      {id:7,nombre:'Antropología',año:1,reqs:[]},
+      {id:8,nombre:'Teología 1',año:1,reqs:[]},
+      {id:9,nombre:'Relación Médico Paciente 1',año:1,reqs:[]},
+
+      {id:10,nombre:'Fisiología 1',año:2,reqs:[1,2,3,4,5,6]},
+      {id:11,nombre:'Inmunología',año:2,reqs:[6]},
+      {id:12,nombre:'Medicina Celular y Molecular',año:2,reqs:[2,3,5,6]},
+      {id:13,nombre:'Microbiología',año:2,reqs:[]},
+      {id:14,nombre:'Ética',año:2,reqs:[7,8]},
+      {id:15,nombre:'Bioestadística',año:2,reqs:[]},
+      {id:16,nombre:'Fisiología 2',año:2,reqs:[10]},
+      {id:17,nombre:'Psicología',año:2,reqs:[]},
+      {id:18,nombre:'Relación Médico Paciente 2',año:2,reqs:[9]},
+
+      {id:19,nombre:'Fisiopatología',año:3,reqs:[11,16]},
+      {id:20,nombre:'Farmacología 1',año:3,reqs:[11,16]},
+      {id:21,nombre:'Epidemiología',año:3,reqs:[]},
+      {id:22,nombre:'Teología 2',año:3,reqs:[14]},
+      {id:23,nombre:'Anatomía Patológica',año:3,reqs:[11,16]},
+      {id:24,nombre:'Genética',año:3,reqs:[12]},
+
+      {id:25,nombre:'Diagnóstico por Imágenes',año:4,reqs:[]},
+      {id:26,nombre:'Medicina Interna 1',año:4,reqs:[]},
+      {id:27,nombre:'Cirugía',año:4,reqs:[26]},
+      {id:28,nombre:'Otorrinolaringología',año:4,reqs:[]},
+      {id:29,nombre:'Metodología de la Investigación',año:4,reqs:[]},
+      {id:30,nombre:'Cuestiones de Bioética',año:4,reqs:[22]},
+      {id:31,nombre:'Medicina Interna 2',año:4,reqs:[26]},
+      {id:32,nombre:'Toxicología',año:4,reqs:[]},
+      {id:33,nombre:'Urología',año:4,reqs:[26]},
+      {id:34,nombre:'Farmacología 2',año:4,reqs:[20]},
+      {id:35,nombre:'Nutrición',año:4,reqs:[]},
+
+      {id:36,nombre:'Medicina Interna 3',año:5,reqs:[31]},
+      {id:37,nombre:'Pediatría',año:5,reqs:[]},
+      {id:38,nombre:'Ginecología',año:5,reqs:[]},
+      {id:39,nombre:'Enfermedades Infecciosas',año:5,reqs:[]},
+      {id:40,nombre:'Traumatología',año:5,reqs:[]},
+      {id:41,nombre:'Obstetricia',año:5,reqs:[]},
+      {id:42,nombre:'Medicina Legal y Deontología Médica',año:5,reqs:[]},
+      {id:43,nombre:'Psiquiatría',año:5,reqs:[]},
+      {id:44,nombre:'Neurología',año:5,reqs:[]},
+      {id:45,nombre:'Atención Primaria de la Salud',año:5,reqs:[]},
+      {id:46,nombre:'Oftalmología',año:5,reqs:[]},
+      {id:47,nombre:'Dermatología',año:5,reqs:[]},
+      {id:48,nombre:'Gestión y Economía de la Salud',año:5,reqs:[]},
+      {id:49,nombre:'Salud Pública',año:5,reqs:[]},
+      {id:50,nombre:'Medicina Crítica',año:5,reqs:[]},
+
+      {id:51,nombre:'Internado Rotatorio',año:6,reqs:[]},
+      {id:52,nombre:'Seminarios de Bioética',año:6,reqs:[]},
+    ];
+
+    const extraRestricciones = (id, aprobadas) => {
+      const año = materias.find(m => m.id === id)?.año;
+      if (año === 2) return materias.filter(m => m.año === 1 && aprobadas.includes(m.id)).length >= 3;
+      if (año === 3) return materias.filter(m => m.año === 1).every(m => aprobadas.includes(m.id)) && aprobadas.includes(10);
+      if (año === 4) return materias.filter(m => m.año === 2 || m.año === 3).every(m => aprobadas.includes(m.id));
+      if (año === 5) return aprobadas.includes(26);
+      if (id === 51) return materias.filter(m => m.año === 4 || m.año === 5).every(m => aprobadas.includes(m.id));
+      return true;
+    };
+
+    const estado = JSON.parse(localStorage.getItem('estadoMedicina') || '{}');
+
+    function render() {
+      const grid = document.getElementById('malla');
+      grid.innerHTML = '';
+      const cols = Array.from({length: 6}, (_, i) => {
+        const col = document.createElement('div');
+        col.className = 'year';
+        col.innerHTML = `<h2>${i+1}° año</h2>`;
+        grid.appendChild(col);
+        return col;
+      });
+
+      materias.forEach(m => {
+        const el = document.createElement('div');
+        const aprobadas = Object.entries(estado).filter(([_, v]) => v).map(([k]) => +k);
+        const falta = m.reqs.filter(id => !estado[id]);
+        const cumpleExtra = extraRestricciones(m.id, aprobadas);
+        const bloqueada = falta.length > 0 || !cumpleExtra;
+        el.className = 'subject';
+        if (estado[m.id]) el.classList.add('approved');
+        else if (bloqueada) el.classList.add('locked');
+        el.textContent = m.nombre;
+        if (bloqueada && !estado[m.id]) {
+          let texto = '';
+          if (falta.length > 0) texto += 'Faltan: ' + falta.map(f => materias.find(mm => mm.id === f).nombre).join(', ');
+          if (!cumpleExtra) texto += (texto ? '\n' : '') + 'No cumple requisitos generales';
+          el.setAttribute('data-tooltip', texto);
+        }
+        el.onclick = () => {
+          if (bloqueada) return;
+          estado[m.id] = !estado[m.id];
+          localStorage.setItem('estadoMedicina', JSON.stringify(estado));
+          render();
+        };
+        cols[m.año-1].appendChild(el);
+      });
+
+      const total = materias.length;
+      const aprobadas = Object.values(estado).filter(x => x).length;
+      const porcentaje = Math.round(aprobadas / total * 100);
+      document.getElementById('progreso').textContent = `Progreso: ${aprobadas}/${total}`;
+      document.getElementById('porcentaje').textContent = `Porcentaje completado: ${porcentaje}%`;
+    }
+
+    render();
+  </script>
+</body>
+</html>
