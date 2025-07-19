@@ -181,14 +181,24 @@
         cols[m.año-1].appendChild(el);
       });
 
-      const total = materias.length;
-      const aprobadas = Object.values(estado).filter(x => x).length;
-      const porcentaje = Math.round(aprobadas / total * 100);
-      document.getElementById('progreso').textContent = `Progreso: ${aprobadas}/${total}`;
-      document.getElementById('porcentaje').textContent = `Porcentaje completado: ${porcentaje}%`;
+      item.onclick = () => {
+            if (item.classList.contains("locked")) return;
+            if (aprobadas.has(m.codigo)) aprobadas.delete(m.codigo);
+            else aprobadas.add(m.codigo);
+            localStorage.setItem("materias_aprobadas", JSON.stringify([...aprobadas]));
+            renderMalla();
+            actualizarPorcentaje();
+          };
+
+          col.appendChild(item);
+        });
+
+        container.appendChild(col);
+      }
     }
 
-    render();
+    renderMalla();
+    actualizarPorcentaje();
   </script>
 </body>
 </html>
